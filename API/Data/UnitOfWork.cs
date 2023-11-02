@@ -1,25 +1,37 @@
-using API.Data.Repositeries;
 using API.Interfaces;
-using AutoMapper;
 
 namespace API.Data
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
+        private bool _disposed;
 
-        public UnitOfWork(DataContext context, IMapper mapper)
+        private readonly DataContext _context;
+        private readonly IUserRepository _userRepository;
+        private readonly IMessageRepository _messageRepository;
+        private readonly ILikesRepository _likesRepository;
+        private readonly IPhotoRepository _photoRepository;
+
+        public UnitOfWork(DataContext context,
+            IUserRepository userRepository,
+            IMessageRepository messageRepository,
+            ILikesRepository likesRepository,
+            IPhotoRepository photoRepository)
         {
             _context = context;
-            _mapper = mapper;
+            _userRepository = userRepository;
+            _messageRepository = messageRepository;
+            _likesRepository = likesRepository;
+            _photoRepository = photoRepository;
         }
-        public IUserRepository UserRepository => new UserRepository(_context, _mapper);
 
-        public IMessageRepository MessageRepository => new MessageRepository(_context, _mapper);
+        public IUserRepository UserRepository => _userRepository;
 
-        public ILikesRepository LikesRepository => new LikesRepository(_context);
-        public IPhotoRepository PhotoRepository => new PhotoRepository(_context);
+        public IMessageRepository MessageRepository => _messageRepository;
+
+        public ILikesRepository LikesRepository => _likesRepository;
+
+        public IPhotoRepository PhotoRepository => _photoRepository;
 
         public async Task<bool> Complete()
         {
@@ -29,6 +41,26 @@ namespace API.Data
         public bool HasChanges()
         {
             return _context.ChangeTracker.HasChanges();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _context.Dispose();
+                }
+
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            System.GC.SuppressFinalize(this);
         }
     }
 }

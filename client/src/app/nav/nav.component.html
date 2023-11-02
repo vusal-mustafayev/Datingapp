@@ -49,8 +49,12 @@
         Welcome {{ user.knownAs | titlecase }}</a
       >
       <div class="dropdown-menu mt-2" *dropdownMenu>
-        <a class="dropdown-item" routerLink="/member/edit">Edit profile</a>
-        <a class="dropdown-item" (click)="logout()">Logout</a>
+        <a class="dropdown-item" routerLink="/member/edit"
+          ><i class="fa fa-user me-2"></i>Edit Profile</a
+        >
+        <a class="dropdown-item" (click)="logout()"
+          ><i class="fa fa-sign-out me-2"></i>Logout</a
+        >
       </div>
     </div>
 
@@ -76,7 +80,13 @@
         type="password"
         placeholder="Password"
       />
-      <button class="btn btn-success" type="submit">Login</button>
+      <button
+        class="btn btn-success"
+        type="submit"
+        [disabled]="!loginForm.valid"
+      >
+        Login
+      </button>
     </form>
   </div>
 </nav>
